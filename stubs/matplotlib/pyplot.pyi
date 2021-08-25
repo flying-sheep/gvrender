@@ -1,0 +1,3 @@
+from matplotlib.axes import Axes
+
+def gca() -> Axes: ...
