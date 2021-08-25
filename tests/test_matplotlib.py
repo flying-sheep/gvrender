@@ -1,7 +1,7 @@
 """Matplotlib rendering tests"""
 
 # from typing import get_type_hints
-
+from matplotlib import pyplot
 from pygraphviz import AGraph
 
 from gvrender.matplotlib import render
@@ -16,4 +16,6 @@ MIN_DOT = 'graph { a -- b }'
 
 def test_render():
     """A simple render call should work"""
-    render(AGraph(string=MIN_DOT), prog='dot')
+    fig, axes = pyplot.subplots()
+    render(AGraph(string=MIN_DOT), axes, prog='dot')
+    fig.show()

@@ -72,7 +72,7 @@ def draw(graph: xelem.Graph, axes: Axes):
 def _draw_shapes(shapes: cabc.Iterable[xelem.Shape], axes: Axes):
     for shape in shapes:
         if isinstance(shape, xelem.LineShape):
-            axes.add_artist(PathPatch(Path(shape.points)))
+            axes.patches.append(PathPatch(Path(shape.points)))
         elif isinstance(shape, xelem.BezierShape):
             codes = [Path.MOVETO] + ([Path.CURVE3] * (len(shape.points) - 1))
-            axes.add_artist(PathPatch(Path(shape.points, codes)))
+            axes.patches.append(PathPatch(Path(shape.points, codes)))
