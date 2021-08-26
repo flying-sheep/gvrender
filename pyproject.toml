@@ -31,10 +31,11 @@ line_length = 100
 profile = 'black'
 multi_line_output = 3
 
-[tool.pylint.'messages control']
+[tool.pylint.messages_control]
 disable = [
     'import-outside-toplevel',
 ]
+variable-rgx = '([xyijwh]|[^\W\dA-Z][^\WA-Z]{2,}|_[^\WA-Z]*|__[^\WA-Z\d_][^\WA-Z]+__)$'
 
 [tool.pytest.ini_options]
 xfail_strict = true

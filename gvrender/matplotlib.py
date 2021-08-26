@@ -9,18 +9,27 @@ References
 """
 
 import collections.abc as cabc
-
-# import math
+import math
 from typing import Optional
 
 from matplotlib.axes import Axes
-from matplotlib.patches import PathPatch
+from matplotlib.patches import Ellipse, PathPatch
 from matplotlib.path import Path
+from matplotlib.text import Text
 from pygraphviz import AGraph
 from xdot.dot.parser import XDotParser
 from xdot.ui import elements as xelem
 
 from .types import GraphLike, Prog
+
+
+def bounding(self):
+    """hack to correctly infer bounding box: https://github.com/jrfonseca/xdot.py/issues/95"""
+    x, w, j = self.x, self.w, self.j
+    return x - 0.5 * (1 + j) * w, math.inf, x + 0.5 * (1 - j) * w, -math.inf
+
+
+xelem.TextShape.bounding = property(bounding)  # type: ignore
 
 
 def render(graph_or_code: GraphLike, axes: Optional[Axes] = None, *, prog: Optional[Prog] = None):
@@ -48,16 +57,16 @@ def to_xdot(graph_or_code: GraphLike, prog: Optional[Prog]) -> xelem.Graph:
             code = AGraph(string=code.decode('utf-8')).draw(format='xdot', prog=prog)
         parser = XDotParser(code)
         graph = parser.parse()
-    # if not all(math.isfinite(b) for b in graph.bounding):
-    #     raise ValueError('You need to either specify `prog` or pass in a layouted graph')
+    if not all(math.isfinite(b) for b in graph.bounding):
+        raise ValueError('You need to either specify `prog` or pass in a layouted graph')
     return graph
 
 
 def draw(graph: xelem.Graph, axes: Axes):
     """Draw an xdot graph into axes"""
-    # xa, ya, xb, yb = graph.bounding
-    # ax.set_xlim(xa, xb)
-    # ax.set_ylim(ya, yb)
+    x_a, y_a, x_b, y_b = graph.bounding
+    axes.set_xlim(x_a, x_b)
+    axes.set_ylim(y_a, y_b)
 
     edge_shapes = [shape for edge in graph.edges for shape in edge.shapes]
     node_shapes = [shape for node in graph.nodes for shape in node.shapes]
@@ -76,3 +85,9 @@ def _draw_shapes(shapes: cabc.Iterable[xelem.Shape], axes: Axes):
         elif isinstance(shape, xelem.BezierShape):
             codes = [Path.MOVETO] + ([Path.CURVE3] * (len(shape.points) - 1))
             axes.patches.append(PathPatch(Path(shape.points, codes)))
+        elif isinstance(shape, xelem.TextShape):
+            axes.texts.append(Text(shape.x, shape.y, shape.t, figure=axes.figure))
+        elif isinstance(shape, xelem.EllipseShape):
+            axes.patches.append(Ellipse((shape.x0, shape.y0), shape.w, shape.h))
+        else:
+            assert False, f'Unhandled shape {shape}'

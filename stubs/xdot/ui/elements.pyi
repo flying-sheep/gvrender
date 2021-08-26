@@ -1,14 +1,33 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from xdot.ui.pen import Pen
 
 class Shape:
     bounding: tuple[float, float, float, float]
+    def get_text(self) -> Optional[str]: ...
 
-class TextShape(Shape): ...
-class ImageShape(Shape): ...
-class EllipseShape(Shape): ...
-class PolygonShape(Shape): ...
+class TextShape(Shape):
+    pen: Pen
+    x: float
+    y: float
+    j: int
+    """Centering"""
+    w: float
+    """Width"""
+    t: str
+    """Text"""
+
+class ImageShape(Shape): ...  # TODO
+
+class EllipseShape(Shape):
+    pen: Pen
+    x0: float
+    y0: float
+    w: float
+    h: float
+    filled: bool
+
+class PolygonShape(Shape): ...  # TODO
 
 class LineShape(Shape):
     pen: Pen
@@ -22,7 +41,7 @@ class BezierShape(Shape):
 class CompoundShape(Shape):
     shapes: list[Shape]
 
-class Element(CompoundShape): ...
+class Element(CompoundShape): ...  # TODO
 
 class Node(Element):
     id: str
