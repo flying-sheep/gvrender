@@ -83,7 +83,7 @@ def _draw_shapes(shapes: cabc.Iterable[xelem.Shape], axes: Axes):
         if isinstance(shape, xelem.LineShape):
             axes.add_patch(PathPatch(Path(shape.points)))
         elif isinstance(shape, xelem.BezierShape):
-            codes = [Path.MOVETO] + ([Path.CURVE3] * (len(shape.points) - 1))
+            codes = [Path.MOVETO] + ([Path.CURVE4] * (len(shape.points) - 1))
             axes.add_patch(PathPatch(Path(shape.points, codes)))
         elif isinstance(shape, xelem.TextShape):
             axes._add_text(  # pylint: disable=protected-access

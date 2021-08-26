@@ -42,3 +42,4 @@ xfail_strict = true
 
 [tool.mypy]
 mypy_path = 'stubs'
+plugins = ['numpy.typing.mypy_plugin']
