@@ -17,5 +17,6 @@ MIN_DOT = 'graph { a -- b }'
 def test_render():
     """A simple render call should work"""
     fig, axes = pyplot.subplots()
+    axes.set_aspect('equal')
     render(AGraph(string=MIN_DOT), axes, prog='dot')
     fig.show()

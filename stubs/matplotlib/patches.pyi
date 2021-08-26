@@ -3,6 +3,7 @@ from typing import Any, Literal, Optional, Union
 
 from matplotlib.artist import Artist
 from matplotlib.path import Path
+from matplotlib.transform import Transform
 
 _Color = Any
 
@@ -38,6 +39,9 @@ class Patch(Artist):
         joinstyle=None,
         **kwargs
     ) -> None: ...
+    # TODO: more
+    transform: Transform
+    # TODO: more
 
 class Shadow(Patch):
     def __init__(

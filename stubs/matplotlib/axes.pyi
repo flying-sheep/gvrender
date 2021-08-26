@@ -1,16 +1,27 @@
 import collections.abc as cabc
-from typing import Any, Optional, Union, overload
+from typing import Any, Literal, Optional, Union, overload
 
 from matplotlib.artist import Artist
 from matplotlib.collections import Collection
+from matplotlib.container import Container
 from matplotlib.image import AxesImage
 from matplotlib.legend import Legend
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch, Rectangle
+from matplotlib.table import Table
 from matplotlib.text import Text
 
 class _AxesBase(Artist):
-    def add_artist(self, a: Artist): ...
+    # adding artists
+    def add_artist(self, a: Artist) -> Artist: ...
+    def add_child_axes(self, ax: Axes) -> Axes: ...
+    def add_collection(self, collection: Collection, autolim: bool = True) -> Collection: ...
+    def add_container(self, container: Container) -> Container: ...
+    def add_image(self, image: AxesImage) -> AxesImage: ...
+    def add_line(self, line: Line2D) -> Line2D: ...
+    def _add_text(self, txt: Text) -> Text: ...
+    def add_patch(self, p: Patch) -> Patch: ...
+    def add_table(self, tab: Table) -> Table: ...
     # xlim
     def get_xlim(self) -> tuple[float, float]: ...
     @overload
@@ -57,6 +68,16 @@ class _AxesBase(Artist):
         emit: bool = True,
         auto: bool = False,
     ) -> tuple[float, float]: ...
+    # TODO: more
+    def get_aspect(self) -> Union[Literal['auto'], float]: ...
+    def set_aspect(
+        self,
+        aspect: Union[Literal['auto', 'equal'], float],
+        adjustable: Optional[Literal['box', 'datalim']] = None,
+        anchor: Union[str, tuple[float, float], None] = None,
+        share: bool = False,
+    ) -> None: ...
+    # TODO: more
 
 class Axes(_AxesBase):
     artists: list[Artist]

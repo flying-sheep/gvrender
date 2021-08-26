@@ -81,13 +81,15 @@ def draw(graph: xelem.Graph, axes: Axes):
 def _draw_shapes(shapes: cabc.Iterable[xelem.Shape], axes: Axes):
     for shape in shapes:
         if isinstance(shape, xelem.LineShape):
-            axes.patches.append(PathPatch(Path(shape.points)))
+            axes.add_patch(PathPatch(Path(shape.points)))
         elif isinstance(shape, xelem.BezierShape):
             codes = [Path.MOVETO] + ([Path.CURVE3] * (len(shape.points) - 1))
-            axes.patches.append(PathPatch(Path(shape.points, codes)))
+            axes.add_patch(PathPatch(Path(shape.points, codes)))
         elif isinstance(shape, xelem.TextShape):
-            axes.texts.append(Text(shape.x, shape.y, shape.t, figure=axes.figure))
+            axes._add_text(  # pylint: disable=protected-access
+                Text(shape.x, shape.y, shape.t, figure=axes.figure)
+            )
         elif isinstance(shape, xelem.EllipseShape):
-            axes.patches.append(Ellipse((shape.x0, shape.y0), shape.w, shape.h))
+            axes.add_patch(Ellipse((shape.x0, shape.y0), shape.w, shape.h))
         else:
             assert False, f'Unhandled shape {shape}'
