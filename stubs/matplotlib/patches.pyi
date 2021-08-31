@@ -5,7 +5,7 @@ from matplotlib.artist import Artist
 from matplotlib.path import Path
 from matplotlib.transform import Transform
 
-_Color = Any
+from ._types import _Color
 
 class Patch(Artist):
     def __init__(

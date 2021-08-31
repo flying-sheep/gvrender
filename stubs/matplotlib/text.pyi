@@ -1,6 +1,8 @@
+from pathlib import Path
 from typing import Any, Literal, Union
 
 from matplotlib.artist import Artist
+from matplotlib.font_manager import FontProperties
 
 class Text(Artist):
     def __init__(
@@ -12,7 +14,7 @@ class Text(Artist):
         verticalalignment='baseline',
         horizontalalignment='left',
         multialignment=None,
-        fontproperties=None,  # defaults to FontProperties()
+        fontproperties: Union[FontProperties, str, Path] = None,  # defaults to FontProperties()
         rotation=None,
         linespacing=None,
         rotation_mode=None,

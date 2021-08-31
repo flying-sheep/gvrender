@@ -8,11 +8,12 @@ References
 .. _artists tutorial: https://matplotlib.org/stable/tutorials/intermediate/artists.html
 """
 
-import collections.abc as cabc
 import math
-from typing import Optional
+from typing import Iterable, Optional
 
 from matplotlib.axes import Axes
+from matplotlib.font_manager import FontProperties
+from matplotlib.lines import Line2D
 from matplotlib.patches import Ellipse, PathPatch
 from matplotlib.path import Path
 from matplotlib.text import Text
@@ -78,18 +79,46 @@ def draw(graph: xelem.Graph, axes: Axes):
         _draw_shapes(edge_shapes, axes)
 
 
-def _draw_shapes(shapes: cabc.Iterable[xelem.Shape], axes: Axes):
+def _draw_shapes(shapes: Iterable[xelem.Shape], axes: Axes):
     for shape in shapes:
         if isinstance(shape, xelem.LineShape):
-            axes.add_patch(PathPatch(Path(shape.points)))
+            x, y = zip(*shape.points)
+            axes.add_line(Line2D(x, y))
         elif isinstance(shape, xelem.BezierShape):
             codes = [Path.MOVETO] + ([Path.CURVE4] * (len(shape.points) - 1))
-            axes.add_patch(PathPatch(Path(shape.points, codes)))
+            axes.add_patch(
+                PathPatch(
+                    Path(shape.points, codes),
+                    edgecolor=shape.pen.color,
+                    linewidth=shape.pen.linewidth,
+                )
+            )
         elif isinstance(shape, xelem.TextShape):
+            font_props = FontProperties(
+                family=shape.pen.fontname,
+                style='italic' if shape.pen.italic else 'normal',
+                weight='bold' if shape.pen.bold else 'normal',
+                size=int(shape.pen.fontsize),
+            )
             axes._add_text(  # pylint: disable=protected-access
-                Text(shape.x, shape.y, shape.t, figure=axes.figure)
+                Text(
+                    shape.x,
+                    shape.y,
+                    shape.t,
+                    color=shape.pen.color,
+                    fontproperties=font_props,
+                )
             )
         elif isinstance(shape, xelem.EllipseShape):
-            axes.add_patch(Ellipse((shape.x0, shape.y0), shape.w, shape.h))
+            axes.add_patch(
+                Ellipse(
+                    (shape.x0, shape.y0),
+                    shape.w,
+                    shape.h,
+                    edgecolor=shape.pen.color,
+                    facecolor=shape.pen.fillcolor if shape.filled else '#0000',
+                    linewidth=shape.pen.linewidth,
+                )
+            )
         else:
             assert False, f'Unhandled shape {shape}'

@@ -17,9 +17,9 @@ repos:
   hooks:
   - id: mypy
     args: []
-    additional_dependencies: [matplotlib, pygraphviz, xdot]
+    additional_dependencies: [get_version, pygraphviz, xdot, matplotlib]
 - repo: https://github.com/pycqa/pylint
   rev: v2.10.2  # https://github.com/PyCQA/pylint/releases
   hooks:
   - id: pylint
-    additional_dependencies: [matplotlib, pygraphviz, xdot]
+    additional_dependencies: [get_version, pygraphviz, xdot, matplotlib]
