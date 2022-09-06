@@ -49,6 +49,5 @@ variable-rgx = '([xyijwh]|[^\W\dA-Z][^\WA-Z]{2,}|_[^\WA-Z]*|__[^\WA-Z\d_][^\WA-Z
 [tool.pytest.ini_options]
 xfail_strict = true
 
-[tool.mypy]
-mypy_path = 'stubs'
-plugins = ['numpy.typing.mypy_plugin']
+[tool.pyright]
+include = ['src']
