@@ -1,0 +1,31 @@
+# https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip wheel
+        pip install --debug '.[test]'
+    - uses: jakebailey/pyright-action@v1
+      with:
+        version: 1.1.244
+    - name: Tests
+      run: pytest -v --color=yes --cov-report=term-missing --cov-config=pyproject.toml --cov=gvrender --cov=tests
