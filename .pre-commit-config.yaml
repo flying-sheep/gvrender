@@ -16,4 +16,6 @@ repos:
   rev: v2.15.0  # https://github.com/PyCQA/pylint/releases
   hooks:
   - id: pylint
+    args:
+    - '--ignored-modules=pygraphviz'
     additional_dependencies: [get_version, xdot, matplotlib]
