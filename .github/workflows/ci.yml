@@ -12,14 +12,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.8'
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+        cache: pip
+        cache-dependency-path: '**/pyproject.toml'
     - name: Install dependencies
       run: |
         sudo apt-get install libgirepository1.0-dev libgraphviz-dev gir1.2-gdkpixbuf-2.0
