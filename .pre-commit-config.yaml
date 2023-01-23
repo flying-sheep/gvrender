@@ -13,7 +13,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/pycqa/pylint
-  rev: v2.16.0b0  # https://github.com/PyCQA/pylint/releases
+  rev: v2.16.0b1  # https://github.com/PyCQA/pylint/releases
   hooks:
   - id: pylint
     args:
