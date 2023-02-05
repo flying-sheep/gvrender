@@ -1,6 +1,7 @@
 /.venv/
 /.idea/
 /dist/
+/target/
 /.pytest_cache/
 /.mypy_cache/
 __pycache__/

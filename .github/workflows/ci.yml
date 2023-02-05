@@ -20,7 +20,6 @@ jobs:
         cache-dependency-path: '**/pyproject.toml'
     - name: Install dependencies
       run: |
-        sudo apt-get install libgirepository1.0-dev libgraphviz-dev gir1.2-gdkpixbuf-2.0
         pip install --upgrade pip wheel
         pip install --debug '.[test]'
     - uses: jakebailey/pyright-action@v1
