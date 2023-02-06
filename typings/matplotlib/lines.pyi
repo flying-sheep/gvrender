@@ -28,5 +28,5 @@ class Line2D(Artist):
         pickradius: int = 5,
         drawstyle=None,
         markevery=None,
-        **kwargs
+        **kwargs,
     ) -> None: ...
