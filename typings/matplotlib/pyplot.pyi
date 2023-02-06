@@ -14,5 +14,5 @@ def subplots(
     squeeze: bool = True,
     subplot_kw: cabc.Mapping[str, Any] = None,
     gridspec_kw: cabc.Mapping[str, Any] = None,
-    **fig_kw
+    **fig_kw,
 ) -> tuple[Figure, Union[Axes, list[Axes]]]: ...

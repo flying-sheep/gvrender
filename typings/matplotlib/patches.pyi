@@ -37,7 +37,7 @@ class Patch(Artist):
         fill: bool = True,
         capstyle=None,
         joinstyle=None,
-        **kwargs
+        **kwargs,
     ) -> None: ...
     # TODO: more
     transform: Transform
