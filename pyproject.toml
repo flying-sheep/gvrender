@@ -17,8 +17,7 @@ requires-python = '>=3.8'
 dependencies = [
     'get_version',
     'PyGraphviz',
-    'xdot',
-    'PyGObject',  # really a dependency of xdot it doesn’t declare
+    'xdot-rs',
     'matplotlib',
 ]
 
