@@ -1,6 +1,8 @@
-import collections.abc as cabc
+from __future__ import annotations
+
+from collections.abc import Generator, MutableMapping
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Literal
 
 class SWIGPointer: ...
 
@@ -50,8 +52,8 @@ class AGraph:
     edge_attr: Attribute
     def __init__(
         self,
-        thing: Union[str, Path, dict, SWIGPointer] = None,
-        filename: Union[str, Path] = None,
+        thing: str | Path | dict | SWIGPointer = None,
+        filename: str | Path = None,
         data: dict = None,
         string: str = None,
         handle: SWIGPointer = None,
@@ -62,15 +64,15 @@ class AGraph:
     ) -> None: ...
     def draw(
         self,
-        path: Optional[str] = None,
-        format: Optional[_Format] = None,
-        prog: Optional[Literal['neato', 'dot', 'twopi', 'circo', 'fdp', 'nop']] = None,
+        path: str | None = None,
+        format: _Format | None = None,
+        prog: Literal['neato', 'dot', 'twopi', 'circo', 'fdp', 'nop'] | None = None,
         args: str = '',
     ): ...
 
-class Attribute(cabc.MutableMapping):
+class Attribute(MutableMapping):
     def __getitem__(self, name: str) -> str: ...
     def __setitem__(self, name: str, value: str) -> None: ...
     def __delitem__(self, name: str) -> None: ...
-    def __iter__(self) -> cabc.Generator[str, None, None]: ...
+    def __iter__(self) -> Generator[str, None, None]: ...
     def __len__(self) -> int: ...

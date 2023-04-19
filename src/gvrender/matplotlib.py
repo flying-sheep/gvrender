@@ -8,8 +8,10 @@ References
 .. _artists tutorial: https://matplotlib.org/stable/tutorials/intermediate/artists.html
 """
 
+from __future__ import annotations
+
 import math
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 import xdot_rs.shapes as xs
 from matplotlib.axes import Axes
@@ -29,7 +31,7 @@ def bounding(self):
     return x - 0.5 * (1 + j) * w, math.inf, x + 0.5 * (1 - j) * w, -math.inf
 
 
-def render(graph_or_code: GraphLike, axes: Optional[Axes] = None, *, prog: Optional[Prog] = None):
+def render(graph_or_code: GraphLike, axes: Axes | None = None, *, prog: Prog | None = None):
     """Render a graph to matplotlib"""
     if axes is None:
         from matplotlib import pyplot
@@ -40,7 +42,7 @@ def render(graph_or_code: GraphLike, axes: Optional[Axes] = None, *, prog: Optio
     draw(graph, axes)
 
 
-def to_xdot(graph_or_code: GraphLike, prog: Optional[Prog]) -> AGraph:
+def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
     """Convert an AGraph or Graphviz code to a xdot Graph"""
     code = graph_or_code if isinstance(graph_or_code, bytes) else str(graph_or_code).encode('utf-8')
     if prog:

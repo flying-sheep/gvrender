@@ -1,5 +1,6 @@
-import collections.abc as cabc
-from typing import Optional
+from __future__ import annotations
+
+from collections.abc import Collection
 
 from matplotlib.artist import Artist
 
@@ -8,11 +9,11 @@ from ._types import _Color
 class Line2D(Artist):
     def __init__(
         self,
-        xdata: cabc.Collection[float],
-        ydata: cabc.Collection[float],
+        xdata: Collection[float],
+        ydata: Collection[float],
         linewidth=None,  # all Nones default to rc
         linestyle=None,
-        color: Optional[_Color] = None,
+        color: _Color | None = None,
         marker=None,
         markersize=None,
         markeredgewidth=None,

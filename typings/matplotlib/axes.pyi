@@ -1,8 +1,10 @@
-import collections.abc as cabc
-from typing import Any, Literal, Optional, Union, overload
+from __future__ import annotations
+
+from collections.abc import Collection
+from typing import Any, Literal, overload
 
 from matplotlib.artist import Artist
-from matplotlib.collections import Collection
+from matplotlib.collections import Collection as MPLCollection
 from matplotlib.container import Container
 from matplotlib.image import AxesImage
 from matplotlib.legend import Legend
@@ -15,7 +17,7 @@ class _AxesBase(Artist):
     # adding artists
     def add_artist(self, a: Artist) -> Artist: ...
     def add_child_axes(self, ax: Axes) -> Axes: ...
-    def add_collection(self, collection: Collection, autolim: bool = True) -> Collection: ...
+    def add_collection(self, collection: MPLCollection, autolim: bool = True) -> MPLCollection: ...
     def add_container(self, container: Container) -> Container: ...
     def add_image(self, image: AxesImage) -> AxesImage: ...
     def add_line(self, line: Line2D) -> Line2D: ...
@@ -27,8 +29,8 @@ class _AxesBase(Artist):
     @overload
     def set_xlim(
         self,
-        left: Optional[float] = None,
-        right: Optional[float] = None,
+        left: float | None = None,
+        right: float | None = None,
         emit: bool = True,
         auto: bool = False,
     ) -> tuple[float, float]: ...
@@ -40,8 +42,8 @@ class _AxesBase(Artist):
     def set_xlim(
         self,
         *,
-        xmin: Optional[float] = None,
-        xmax: Optional[float] = None,
+        xmin: float | None = None,
+        xmax: float | None = None,
         emit: bool = True,
         auto: bool = False,
     ) -> tuple[float, float]: ...
@@ -50,8 +52,8 @@ class _AxesBase(Artist):
     @overload
     def set_ylim(
         self,
-        bottom: Optional[float] = None,
-        top: Optional[float] = None,
+        bottom: float | None = None,
+        top: float | None = None,
         emit: bool = True,
         auto: bool = False,
     ) -> tuple[float, float]: ...
@@ -63,18 +65,18 @@ class _AxesBase(Artist):
     def set_ylim(
         self,
         *,
-        ymin: Optional[float] = None,
-        ymax: Optional[float] = None,
+        ymin: float | None = None,
+        ymax: float | None = None,
         emit: bool = True,
         auto: bool = False,
     ) -> tuple[float, float]: ...
     # TODO: more
-    def get_aspect(self) -> Union[Literal['auto'], float]: ...
+    def get_aspect(self) -> Literal['auto'] | float: ...
     def set_aspect(
         self,
-        aspect: Union[Literal['auto', 'equal'], float],
-        adjustable: Optional[Literal['box', 'datalim']] = None,
-        anchor: Union[str, tuple[float, float], None] = None,
+        aspect: Literal['auto', 'equal'] | float,
+        adjustable: Literal['box', 'datalim'] | None = None,
+        anchor: str | tuple[float, float] | None = None,
         share: bool = False,
     ) -> None: ...
     # TODO: more
@@ -82,7 +84,7 @@ class _AxesBase(Artist):
 class Axes(_AxesBase):
     artists: list[Artist]
     patch: Rectangle
-    collections: list[Collection]
+    collections: list[MPLCollection]
     images: list[AxesImage]
     legends: list[Legend]
     lines: list[Line2D]
@@ -94,9 +96,9 @@ class Axes(_AxesBase):
     def set_title(self, label, fontdict=None, loc=None, pad=None, *, y=None, **kwargs) -> Text: ...
     def get_legend_handles_labels(self, legend_handler_map=None) -> tuple[Any, Any]: ...
     @overload
-    def legend(self, labels: cabc.Collection[str] = ()) -> Legend: ...
+    def legend(self, labels: Collection[str] = ()) -> Legend: ...
     @overload
-    def legend(self, handles: cabc.Collection[Artist], labels: cabc.Collection[str]) -> Legend: ...
+    def legend(self, handles: Collection[Artist], labels: Collection[str]) -> Legend: ...
     # TODO ...
 
 class Axis(Artist): ...

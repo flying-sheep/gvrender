@@ -17,7 +17,7 @@ requires-python = '>=3.8'
 dependencies = [
     'get_version',
     'PyGraphviz',
-    'xdot-rs',
+    'xdot-rs >=0.2.1',
     'matplotlib',
 ]
 
