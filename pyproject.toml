@@ -34,10 +34,21 @@ Source = 'https://github.com/flying-sheep/gvrender'
 line-length = 100
 skip-string-normalization = true
 
-[tool.isort]
-line_length = 100
-profile = 'black'
-multi_line_output = 3
+[tool.ruff.isort]
+lines-after-imports = 2
+
+[tool.ruff]
+line-length = 100
+select = [
+    # Pyflakes
+    'F',
+    # Pycodestyle
+    'E',
+    'W',
+    # isort
+    'I001'
+]
+src = ['src', 'tests']
 
 [tool.pylint.messages_control]
 disable = [
