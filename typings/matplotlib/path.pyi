@@ -4,6 +4,7 @@ from typing import ClassVar, Type, Union
 from numpy import ndarray, uint8
 from numpy.ma import MaskedArray
 
+
 class Path:
     code_type: ClassVar[Type[uint8]]
     STOP: ClassVar[uint8]  # 1 vertex

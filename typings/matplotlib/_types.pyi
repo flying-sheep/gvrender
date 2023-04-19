@@ -1,5 +1,6 @@
 from typing import Literal, Tuple, Union
 
+
 _Color = Union[
     Tuple[float, float, float],
     Tuple[float, float, float, float],

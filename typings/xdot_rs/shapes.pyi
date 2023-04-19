@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from enum import Enum
 
+
 class Ellipse:
     filled: bool
     x: float

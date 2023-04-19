@@ -7,6 +7,7 @@ from matplotlib.transform import Transform
 
 from ._types import _Color
 
+
 class Patch(Artist):
     def __init__(
         self,

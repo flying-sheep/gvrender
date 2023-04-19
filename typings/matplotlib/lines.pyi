@@ -5,6 +5,7 @@ from matplotlib.artist import Artist
 
 from ._types import _Color
 
+
 class Line2D(Artist):
     def __init__(
         self,

@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import ClassVar
 
+
 class Rgba:
     r: int
     g: int

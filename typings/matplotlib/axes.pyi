@@ -11,6 +11,7 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.table import Table
 from matplotlib.text import Text
 
+
 class _AxesBase(Artist):
     # adding artists
     def add_artist(self, a: Artist) -> Artist: ...
