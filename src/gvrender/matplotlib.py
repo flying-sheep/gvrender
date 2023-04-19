@@ -44,10 +44,13 @@ def render(graph_or_code: GraphLike, axes: Axes | None = None, *, prog: Prog | N
 
 def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
     """Convert an AGraph or Graphviz code to a xdot Graph"""
-    code = graph_or_code if isinstance(graph_or_code, bytes) else str(graph_or_code).encode('utf-8')
+    if isinstance(graph_or_code, AGraph):
+        graph = graph_or_code
+    else:
+        code = graph_or_code if isinstance(graph_or_code, str) else graph_or_code.decode('utf-8')
+        graph = AGraph(string=code)
     if prog:
-        code = AGraph(string=code.decode('utf-8')).draw(format='xdot', prog=prog)
-    graph = AGraph(code)
+        graph = AGraph(string=graph.draw(format='xdot', prog=prog).decode('utf-8'))
     if not all(math.isfinite(b) for b in graph.bounding):
         raise ValueError('You need to either specify `prog` or pass in a layouted graph')
     return graph
