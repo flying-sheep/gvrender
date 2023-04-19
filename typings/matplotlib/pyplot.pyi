@@ -4,7 +4,6 @@ from typing import Any, Union
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-
 def gcf() -> Figure: ...
 def gca() -> Axes: ...
 def subplots(

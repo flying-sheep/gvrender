@@ -3,7 +3,6 @@ from typing import Literal, Optional, Sequence, Union
 
 from ._types import _FontSize, _FontStretch, _FontWeight
 
-
 class FontProperties:
     def __init__(
         self,

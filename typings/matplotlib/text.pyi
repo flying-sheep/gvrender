@@ -4,7 +4,6 @@ from typing import Any, Literal, Union
 from matplotlib.artist import Artist
 from matplotlib.font_manager import FontProperties
 
-
 class Text(Artist):
     def __init__(
         self,

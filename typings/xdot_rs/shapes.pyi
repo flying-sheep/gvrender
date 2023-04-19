@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from enum import Enum
 
-
 class Ellipse:
     filled: bool
     x: float
@@ -14,7 +13,7 @@ class PointsType(Enum):
     Polyline = ...
     BSpline = ...
 
-class Points(Shape):
+class Points:
     filled: bool
     type: PointsType
     points: Sequence[tuple[float, float]]

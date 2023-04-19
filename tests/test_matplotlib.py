@@ -6,7 +6,6 @@ from pygraphviz import AGraph
 
 from gvrender.matplotlib import render
 
-
 MIN_DOT = 'graph { a -- b }'
 
 

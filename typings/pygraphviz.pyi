@@ -2,7 +2,6 @@ import collections.abc as cabc
 from pathlib import Path
 from typing import Literal, Optional, Union
 
-
 class SWIGPointer: ...
 
 _Format = Literal[
