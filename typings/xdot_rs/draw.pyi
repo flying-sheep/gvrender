@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import ClassVar
 
 class Rgba:
     r: int
@@ -9,14 +8,15 @@ class Rgba:
     b: int
     a: int
 
-class FontCharacteristics(int):
-    BOLD: ClassVar[int]
-    ITALIC: ClassVar[int]
-    UNDERLINE: ClassVar[int]
-    SUPERSCRIPT: ClassVar[int]
-    SUBSCRIPT: ClassVar[int]
-    STRIKE_THROUGH: ClassVar[int]
-    OVERLINE: ClassVar[int]
+class FontCharacteristics:
+    bits: int
+    bold: bool
+    italic: bool
+    underline: bool
+    superscript: bool
+    subscript: bool
+    strike_through: bool
+    overline: bool
 
 class Style(Enum):
     Dashed = ...
