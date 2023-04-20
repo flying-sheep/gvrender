@@ -116,19 +116,15 @@ def _draw_shapes(shapes: Iterable[xdot_rs.ShapeDraw], axes: Axes):
         elif isinstance(sd.shape, xs.Text):
             font_props = FontProperties(
                 family=sd.pen.font_name,
-                style='italic'
-                if sd.pen.font_characteristics & xdot_rs.draw.FontCharacteristics.ITALIC
-                else 'normal',
-                weight='bold'
-                if sd.pen.font_characteristics & xdot_rs.draw.FontCharacteristics.BOLD
-                else 'normal',
+                style='italic' if sd.pen.font_characteristics.italic else 'normal',
+                weight='bold' if sd.pen.font_characteristics.bold else 'normal',
                 size=int(sd.pen.font_size),
             )
             axes._add_text(  # pylint: disable=protected-access
                 Text(
                     sd.shape.x,
                     sd.shape.y,
-                    sd.shape.t,
+                    sd.shape.text,
                     color=color,
                     fontproperties=font_props,
                 )

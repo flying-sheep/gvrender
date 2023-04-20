@@ -1,12 +1,19 @@
 """Matplotlib rendering tests"""
 
 # from typing import get_type_hints
+import matplotlib.testing
+import pytest
 from matplotlib import pyplot
 from pygraphviz import AGraph
 
 from gvrender.matplotlib import render
 
 MIN_DOT = 'graph { a -- b }'
+
+
+@pytest.fixture(autouse=True)
+def matplotlib_setup():
+    matplotlib.testing.setup()
 
 
 # def test_get_json():
