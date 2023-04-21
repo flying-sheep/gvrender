@@ -17,8 +17,7 @@ requires-python = '>=3.8'
 dependencies = [
     'get_version',
     'PyGraphviz',
-    'xdot',
-    'PyGObject',  # really a dependency of xdot it doesn’t declare
+    'xdot-rs >=0.2.3',
     'matplotlib',
 ]
 
@@ -35,16 +34,20 @@ Source = 'https://github.com/flying-sheep/gvrender'
 line-length = 100
 skip-string-normalization = true
 
-[tool.isort]
-line_length = 100
-profile = 'black'
-multi_line_output = 3
-
-[tool.pylint.messages_control]
-disable = [
-    'import-outside-toplevel',
+[tool.ruff]
+line-length = 100
+select = [
+    # Pyflakes
+    'F',
+    # Pycodestyle
+    'E',
+    'W',
+    # isort
+    'I001',
+    # pyupgrade
+    'UP',
 ]
-variable-rgx = '([xyijwh]|[^\W\dA-Z][^\WA-Z]{2,}|_[^\WA-Z]*|__[^\WA-Z\d_][^\WA-Z]+__)$'
+src = ['src', 'tests']
 
 [tool.pytest.ini_options]
 xfail_strict = true

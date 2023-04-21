@@ -8,9 +8,12 @@ References
 .. _artists tutorial: https://matplotlib.org/stable/tutorials/intermediate/artists.html
 """
 
-import math
-from typing import Iterable, Optional
+from __future__ import annotations
 
+from collections.abc import Iterable
+
+import xdot_rs
+import xdot_rs.shapes as xs  # type: ignore
 from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
 from matplotlib.lines import Line2D
@@ -18,22 +21,11 @@ from matplotlib.patches import Ellipse, PathPatch
 from matplotlib.path import Path
 from matplotlib.text import Text
 from pygraphviz import AGraph
-from xdot.dot.parser import XDotParser
-from xdot.ui import elements as xelem
 
 from .types import GraphLike, Prog
 
 
-def bounding(self):
-    """hack to correctly infer bounding box: https://github.com/jrfonseca/xdot.py/issues/95"""
-    x, w, j = self.x, self.w, self.j
-    return x - 0.5 * (1 + j) * w, math.inf, x + 0.5 * (1 - j) * w, -math.inf
-
-
-xelem.TextShape.bounding = property(bounding)  # type: ignore
-
-
-def render(graph_or_code: GraphLike, axes: Optional[Axes] = None, *, prog: Optional[Prog] = None):
+def render(graph_or_code: GraphLike, axes: Axes | None = None, *, prog: Prog | None = None):
     """Render a graph to matplotlib"""
     if axes is None:
         from matplotlib import pyplot
@@ -44,34 +36,42 @@ def render(graph_or_code: GraphLike, axes: Optional[Axes] = None, *, prog: Optio
     draw(graph, axes)
 
 
-def to_xdot(graph_or_code: GraphLike, prog: Optional[Prog]) -> xelem.Graph:
+def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
     """Convert an AGraph or Graphviz code to a xdot Graph"""
-    if isinstance(graph_or_code, xelem.Graph):
+    if isinstance(graph_or_code, AGraph):
         graph = graph_or_code
     else:
-        code = (
-            graph_or_code
-            if isinstance(graph_or_code, bytes)
-            else str(graph_or_code).encode('utf-8')
-        )
-        if prog:
-            code = AGraph(string=code.decode('utf-8')).draw(format='xdot', prog=prog)
-        parser = XDotParser(code)
-        graph = parser.parse()
-    if not all(math.isfinite(b) for b in graph.bounding):
-        raise ValueError('You need to either specify `prog` or pass in a layouted graph')
+        code = graph_or_code if isinstance(graph_or_code, str) else graph_or_code.decode('utf-8')
+        graph = AGraph(string=code)
+    if prog:
+        graph = AGraph(string=graph.draw(format='xdot', prog=prog).decode('utf-8'))
+    if not all('_draw_' in n.attr for n in graph.nodes_iter()):
+        raise ValueError('You need to either specify `prog` or pass in a layed out graph')
     return graph
 
 
-def draw(graph: xelem.Graph, axes: Axes):
+def draw(graph: AGraph, axes: Axes):
     """Draw an xdot graph into axes"""
-    x_a, y_a, x_b, y_b = graph.bounding
-    axes.set_xlim(x_a, x_b)
-    axes.set_ylim(y_a, y_b)
+    # x_a, y_a, x_b, y_b = graph.bounding
+    # axes.set_xlim(x_a, x_b)
+    # axes.set_ylim(y_a, y_b)
 
-    edge_shapes = [shape for edge in graph.edges for shape in edge.shapes]
-    node_shapes = [shape for node in graph.nodes for shape in node.shapes]
-    if graph.outputorder == 'edgesfirst':
+    edge_shapes = [
+        shape
+        for edge in graph.edges_iter()
+        for shape in xdot_rs.parse(
+            (edge.attr.get('_draw_') or '') + (edge.attr.get('_ldraw_') or '')
+        )
+    ]
+    node_shapes = [
+        shape
+        for node in graph.nodes_iter()
+        for shape in xdot_rs.parse(
+            (node.attr.get('_draw_') or '') + (node.attr.get('_ldraw_') or '')
+        )
+    ]
+    # TODO: default is 'breadthfirst', not 'nodesfirst'
+    if graph.graph_attr.get('outputorder') == 'edgesfirst':
         _draw_shapes(edge_shapes, axes)
         _draw_shapes(node_shapes, axes)
     else:
@@ -79,46 +79,55 @@ def draw(graph: xelem.Graph, axes: Axes):
         _draw_shapes(edge_shapes, axes)
 
 
-def _draw_shapes(shapes: Iterable[xelem.Shape], axes: Axes):
-    for shape in shapes:
-        if isinstance(shape, xelem.LineShape):
-            x, y = zip(*shape.points)
-            axes.add_line(Line2D(x, y))
-        elif isinstance(shape, xelem.BezierShape):
-            codes = [Path.MOVETO] + ([Path.CURVE4] * (len(shape.points) - 1))
+def _draw_shapes(shapes: Iterable[xdot_rs.ShapeDraw], axes: Axes):
+    for sd in shapes:
+        color = (
+            sd.pen.color.r / 255,
+            sd.pen.color.g / 255,
+            sd.pen.color.b / 255,
+            sd.pen.color.a / 255,
+        )
+        if isinstance(sd.shape, xs.Ellipse):
             axes.add_patch(
-                PathPatch(
-                    Path(shape.points, codes),
-                    edgecolor=shape.pen.color,
-                    linewidth=shape.pen.linewidth,
+                Ellipse(
+                    (sd.shape.x, sd.shape.y),
+                    sd.shape.w,
+                    sd.shape.h,
+                    edgecolor=color,
+                    facecolor=sd.pen.fill_color if sd.shape.filled else '#0000',
+                    linewidth=sd.pen.line_width,
                 )
             )
-        elif isinstance(shape, xelem.TextShape):
+        elif isinstance(sd.shape, xs.Points):
+            x, y = zip(*sd.shape.points)
+            if sd.shape.type == xs.PointsType.Polygon:
+                axes.add_line(Line2D(x, y))
+            elif sd.shape.type == xs.PointsType.BSpline:
+                codes = [Path.MOVETO] + ([Path.CURVE4] * (len(sd.shape.points) - 1))
+                axes.add_patch(
+                    PathPatch(
+                        Path(sd.shape.points, codes),
+                        edgecolor=color,
+                        linewidth=sd.pen.line_width,
+                    )
+                )
+            else:
+                assert False, f'Unhandled PointsType {sd.shape.type}'
+        elif isinstance(sd.shape, xs.Text):
             font_props = FontProperties(
-                family=shape.pen.fontname,
-                style='italic' if shape.pen.italic else 'normal',
-                weight='bold' if shape.pen.bold else 'normal',
-                size=int(shape.pen.fontsize),
+                family=sd.pen.font_name,
+                style='italic' if sd.pen.font_characteristics.italic else 'normal',
+                weight='bold' if sd.pen.font_characteristics.bold else 'normal',
+                size=int(sd.pen.font_size),
             )
             axes._add_text(  # pylint: disable=protected-access
                 Text(
-                    shape.x,
-                    shape.y,
-                    shape.t,
-                    color=shape.pen.color,
+                    sd.shape.x,
+                    sd.shape.y,
+                    sd.shape.text,
+                    color=color,
                     fontproperties=font_props,
                 )
             )
-        elif isinstance(shape, xelem.EllipseShape):
-            axes.add_patch(
-                Ellipse(
-                    (shape.x0, shape.y0),
-                    shape.w,
-                    shape.h,
-                    edgecolor=shape.pen.color,
-                    facecolor=shape.pen.fillcolor if shape.filled else '#0000',
-                    linewidth=shape.pen.linewidth,
-                )
-            )
         else:
-            assert False, f'Unhandled shape {shape}'
+            assert False, f'Unhandled shape {sd.shape}'

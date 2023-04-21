@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.transform import Transform

@@ -21,6 +21,7 @@ jobs:
         python-version: '3.8'
         cache: pip
         cache-dependency-path: '**/pyproject.toml'
+    - uses: ts-graphviz/setup-graphviz@v1
     - name: Install dependencies
       run: |
         sudo apt-get install libgirepository1.0-dev libgraphviz-dev gir1.2-gdkpixbuf-2.0

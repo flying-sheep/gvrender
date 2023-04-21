@@ -1,10 +1,12 @@
-from typing import Literal, Tuple, Union
+from __future__ import annotations
 
-_Color = Union[
-    Tuple[float, float, float],
-    Tuple[float, float, float, float],
-    Literal['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w'],
-    Literal[
+from typing import Literal
+
+_Color = (
+    tuple[float, float, float]
+    | tuple[float, float, float, float]
+    | Literal['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+    | Literal[
         'tab:blue',
         'tab:orange',
         'tab:green',
@@ -15,14 +17,14 @@ _Color = Union[
         'tab:gray',
         'tab:olive',
         'tab:cyan',
-    ],
+    ]
     # #hex of lengths 3/6 (opaque) or 4/8 (alpha),
     # grey: '0.5',
     # a CSS4 color name: 'blue'
     # a XKCD color name: 'xkcd:sky blue'
     # a cycler index: 'C0'
-    str,
-]
+    | str
+)
 
 _FontWeight = Literal[
     'ultralight',
