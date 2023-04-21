@@ -24,6 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     'pytest',
+    'pytest-mpl',
 ]
 
 [project.urls]
@@ -50,6 +51,7 @@ select = [
 src = ['src', 'tests']
 
 [tool.pytest.ini_options]
+addopts = '-Werror --import-mode=importlib --mpl'
 xfail_strict = true
 
 [tool.pyright]
