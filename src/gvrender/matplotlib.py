@@ -53,6 +53,7 @@ def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
 def draw(graph: AGraph, axes: Axes):
     """Draw an xdot graph into axes"""
     x_min, y_min, x_max, y_max = map(float, graph.graph_attr['bb'].split(','))
+    axes.axis(False)
     axes.set_xlim(x_min, x_max)
     axes.set_ylim(y_min, y_max)
 
@@ -95,42 +96,25 @@ def _draw_shapes(shapes: Iterable[xdot_rs.ShapeDraw], axes: Axes) -> None:
 
 def _draw_shape(sd: xdot_rs.ShapeDraw, axes: Axes) -> None:
     color = rgba2tuple(sd.pen.color)
-    fill_color = rgba2tuple(sd.pen.fill_color)
+    if not isinstance(sd.shape, xs.Text):
+        patch_args = dict(
+            fill=sd.shape.filled,
+            edgecolor=color,
+            facecolor=rgba2tuple(sd.pen.fill_color),
+            linewidth=sd.pen.line_width,
+        )
     if isinstance(sd.shape, xs.Ellipse):
         axes.add_patch(
-            Ellipse(
-                (sd.shape.x, sd.shape.y),
-                sd.shape.w,
-                sd.shape.h,
-                fill=sd.shape.filled,
-                edgecolor=color,
-                facecolor=fill_color,
-                linewidth=sd.pen.line_width,
-            )
+            Ellipse((sd.shape.x, sd.shape.y), sd.shape.w * 2, sd.shape.h * 2, **patch_args)
         )
     elif isinstance(sd.shape, xs.Points):
         x, y = zip(*sd.shape.points)
         if sd.shape.type == xs.PointsType.Polygon:
-            axes.add_patch(
-                Polygon(
-                    sd.shape.points,
-                    fill=sd.shape.filled,
-                    edgecolor=color,
-                    facecolor=fill_color,
-                )
-            )
+            axes.add_patch(Polygon(sd.shape.points, **patch_args))
         elif sd.shape.type == xs.PointsType.BSpline:
             codes = [Path.MOVETO] + ([Path.CURVE4] * (len(sd.shape.points) - 1))
             # for xy in sd.shape.points: axes.add_patch(Ellipse(xy, 1, 1))
-            axes.add_patch(
-                PathPatch(
-                    Path(sd.shape.points, codes),
-                    fill=sd.shape.filled,
-                    edgecolor=color,
-                    facecolor=fill_color,
-                    linewidth=sd.pen.line_width,
-                )
-            )
+            axes.add_patch(PathPatch(Path(sd.shape.points, codes), **patch_args))
         else:
             assert False, f'Unhandled PointsType {sd.shape.type}'
     elif isinstance(sd.shape, xs.Text):
@@ -138,7 +122,7 @@ def _draw_shape(sd: xdot_rs.ShapeDraw, axes: Axes) -> None:
             family=sd.pen.font_name,
             style='italic' if sd.pen.font_characteristics.italic else 'normal',
             weight='bold' if sd.pen.font_characteristics.bold else 'normal',
-            size=sd.pen.font_size,  # TODO: get this under control
+            size=sd.pen.font_size * 2,  # TODO: get this under control
         )
         text = Text(
             sd.shape.x,
