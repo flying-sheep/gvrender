@@ -17,8 +17,7 @@ import xdot_rs
 import xdot_rs.shapes as xs  # type: ignore
 from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
-from matplotlib.lines import Line2D
-from matplotlib.patches import Ellipse, PathPatch
+from matplotlib.patches import Ellipse, PathPatch, Polygon
 from matplotlib.path import Path
 from matplotlib.text import Text
 from pygraphviz import AGraph, Edge, Node
@@ -57,6 +56,7 @@ def draw(graph: AGraph, axes: Axes):
     axes.set_xlim(x_min, x_max)
     axes.set_ylim(y_min, y_max)
 
+    _draw_shapes(_parse_from_attrs(graph), axes)
     edge_shapes = _parse_from_attrs(graph.edges_iter())
     node_shapes = _parse_from_attrs(graph.nodes_iter())
     # TODO: default is 'breadthfirst', not 'nodesfirst'
@@ -77,11 +77,14 @@ def _verbose_parse(code: str) -> Iterable[xdot_rs.ShapeDraw]:
         raise ValueError(f'Error parsing {code!r}: {e}') from None
 
 
-def _parse_from_attrs(item: Edge | Node | Iterable[Edge | Node]) -> Iterable[xdot_rs.ShapeDraw]:
-    if not isinstance(item, (Edge, Node)):
+def _parse_from_attrs(
+    item: Edge | Node | AGraph | Iterable[Edge | Node],
+) -> Iterable[xdot_rs.ShapeDraw]:
+    if not isinstance(item, (Edge, Node, AGraph)):
         return (sd for i in item for sd in _parse_from_attrs(i))
+    attrs = item.graph_attr if isinstance(item, AGraph) else item.attr
     return chain.from_iterable(
-        _verbose_parse(item.attr.get(attr) or '') for attr in ['_draw_', '_ldraw_']
+        _verbose_parse(attrs.get(attr) or '') for attr in ['_draw_', '_ldraw_']
     )
 
 
@@ -91,33 +94,40 @@ def _draw_shapes(shapes: Iterable[xdot_rs.ShapeDraw], axes: Axes) -> None:
 
 
 def _draw_shape(sd: xdot_rs.ShapeDraw, axes: Axes) -> None:
-    color = (
-        sd.pen.color.r / 255,
-        sd.pen.color.g / 255,
-        sd.pen.color.b / 255,
-        sd.pen.color.a / 255,
-    )
+    color = rgba2tuple(sd.pen.color)
+    fill_color = rgba2tuple(sd.pen.fill_color)
     if isinstance(sd.shape, xs.Ellipse):
         axes.add_patch(
             Ellipse(
                 (sd.shape.x, sd.shape.y),
                 sd.shape.w,
                 sd.shape.h,
+                fill=sd.shape.filled,
                 edgecolor=color,
-                facecolor=sd.pen.fill_color if sd.shape.filled else '#0000',
+                facecolor=fill_color,
                 linewidth=sd.pen.line_width,
             )
         )
     elif isinstance(sd.shape, xs.Points):
         x, y = zip(*sd.shape.points)
         if sd.shape.type == xs.PointsType.Polygon:
-            axes.add_line(Line2D(x, y))
+            axes.add_patch(
+                Polygon(
+                    sd.shape.points,
+                    fill=sd.shape.filled,
+                    edgecolor=color,
+                    facecolor=fill_color,
+                )
+            )
         elif sd.shape.type == xs.PointsType.BSpline:
             codes = [Path.MOVETO] + ([Path.CURVE4] * (len(sd.shape.points) - 1))
+            # for xy in sd.shape.points: axes.add_patch(Ellipse(xy, 1, 1))
             axes.add_patch(
                 PathPatch(
                     Path(sd.shape.points, codes),
+                    fill=sd.shape.filled,
                     edgecolor=color,
+                    facecolor=fill_color,
                     linewidth=sd.pen.line_width,
                 )
             )
@@ -143,3 +153,7 @@ def _draw_shape(sd: xdot_rs.ShapeDraw, axes: Axes) -> None:
         # axes.add_patch(Ellipse((sd.shape.x, sd.shape.y), 1, 1))
     else:
         assert False, f'Unhandled shape {sd.shape}'
+
+
+def rgba2tuple(rgba: xdot_rs.draw.Rgba) -> tuple[float, float, float, float]:
+    return (rgba.r / 255, rgba.g / 255, rgba.b / 255, rgba.a / 255)
