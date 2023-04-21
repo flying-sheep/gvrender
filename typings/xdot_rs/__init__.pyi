@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from .draw import Pen
-from .shapes import Shape
+from . import draw, shapes
+
+__all__ = ['draw', 'shapes', 'ShapeDraw', 'parse']
 
 class ShapeDraw:
-    pen: Pen
-    shape: Shape
+    pen: draw.Pen
+    shape: shapes.Shape
 
 def parse(code: str) -> list[ShapeDraw]: ...

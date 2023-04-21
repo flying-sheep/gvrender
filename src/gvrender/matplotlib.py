@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 import xdot_rs
-import xdot_rs.shapes as xs
+import xdot_rs.shapes as xs  # pyright: reportMissingModuleSource=false
 from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
 from matplotlib.lines import Line2D
@@ -46,7 +46,7 @@ def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
     if prog:
         graph = AGraph(string=graph.draw(format='xdot', prog=prog).decode('utf-8'))
     if not all('_draw_' in n.attr for n in graph.nodes_iter()):
-        raise ValueError('You need to either specify `prog` or pass in a layouted graph')
+        raise ValueError('You need to either specify `prog` or pass in a layed out graph')
     return graph
 
 
