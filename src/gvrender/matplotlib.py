@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 import xdot_rs
-import xdot_rs.shapes as xs  # pyright: reportMissingModuleSource=false
+import xdot_rs.shapes as xs  # type: ignore
 from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
 from matplotlib.lines import Line2D
