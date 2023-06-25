@@ -35,5 +35,5 @@ jobs:
     - if: failure() && steps.tests.outcome == 'failure'
       uses: actions/upload-artifact@v3
       with:
-        name: mpl-results-${{ github.ref_name }}-${{ github.sha }}
+        name: mpl-results-${{ github.head_ref || github.ref_name }}-${{ github.sha }}
         path: tests/results/
