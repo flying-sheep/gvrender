@@ -1,29 +1,17 @@
 """Matplotlib rendering tests"""
 
-# from typing import get_type_hints
-import matplotlib.testing
 import pytest
 from matplotlib import pyplot
-from pygraphviz import AGraph
 
 from gvrender.matplotlib import render
 
 MIN_DOT = 'graph { a -- b }'
 
 
-@pytest.fixture(autouse=True)
-def matplotlib_setup():
-    matplotlib.testing.setup()
-
-
-# def test_get_json():
-#     got = _get_render_data(AGraph(string=min_dot), prog='dot')
-#     assert got.keys() == get_type_hints(xdot.Graph).keys()
-
-
+@pytest.mark.mpl_image_compare
 def test_render():
     """A simple render call should work"""
     fig, axes = pyplot.subplots()
     axes.set_aspect('equal')
-    render(AGraph(string=MIN_DOT), axes, prog='dot')
-    fig.show()
+    render(MIN_DOT, axes, prog='dot')
+    return fig

@@ -24,11 +24,16 @@ jobs:
     - uses: ts-graphviz/setup-graphviz@v1
     - name: Install dependencies
       run: |
-        sudo apt-get install libgirepository1.0-dev libgraphviz-dev gir1.2-gdkpixbuf-2.0
         pip install --upgrade pip wheel
         pip install --debug '.[test]'
     - uses: jakebailey/pyright-action@v1
       with:
-        version: 1.1.244
+        version: 1.1.311
     - name: Tests
-      run: pytest -v --color=yes
+      id: tests
+      run: pytest -v --color=yes --mpl-results-path=tests/results --mpl-generate-summary=html
+    - if: failure() && steps.tests.outcome == 'failure'
+      uses: actions/upload-artifact@v3
+      with:
+        name: mpl-results-${{ github.ref_name }}-${{ github.sha }}
+        path: tests/results/

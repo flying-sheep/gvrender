@@ -11,16 +11,22 @@ References
 from __future__ import annotations
 
 from collections.abc import Iterable
+from itertools import chain
+from typing import TYPE_CHECKING
 
 import xdot_rs
 import xdot_rs.shapes as xs  # type: ignore
 from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
-from matplotlib.lines import Line2D
-from matplotlib.patches import Ellipse, PathPatch
+from matplotlib.patches import Ellipse, PathPatch, Polygon
 from matplotlib.path import Path
 from matplotlib.text import Text
-from pygraphviz import AGraph
+from pygraphviz import AGraph, Edge, Node
+
+if TYPE_CHECKING:
+    from matplotlib.patches import PatchArgs
+else:
+    PatchArgs = dict
 
 from .types import GraphLike, Prog
 
@@ -52,24 +58,14 @@ def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
 
 def draw(graph: AGraph, axes: Axes):
     """Draw an xdot graph into axes"""
-    # x_a, y_a, x_b, y_b = graph.bounding
-    # axes.set_xlim(x_a, x_b)
-    # axes.set_ylim(y_a, y_b)
+    x_min, y_min, x_max, y_max = map(float, graph.graph_attr['bb'].split(','))
+    axes.axis(False)
+    axes.set_xlim(x_min, x_max)
+    axes.set_ylim(y_min, y_max)
 
-    edge_shapes = [
-        shape
-        for edge in graph.edges_iter()
-        for shape in xdot_rs.parse(
-            (edge.attr.get('_draw_') or '') + (edge.attr.get('_ldraw_') or '')
-        )
-    ]
-    node_shapes = [
-        shape
-        for node in graph.nodes_iter()
-        for shape in xdot_rs.parse(
-            (node.attr.get('_draw_') or '') + (node.attr.get('_ldraw_') or '')
-        )
-    ]
+    _draw_shapes(_parse_from_attrs(graph), axes)
+    edge_shapes = _parse_from_attrs(graph.edges_iter())
+    node_shapes = _parse_from_attrs(graph.nodes_iter())
     # TODO: default is 'breadthfirst', not 'nodesfirst'
     if graph.graph_attr.get('outputorder') == 'edgesfirst':
         _draw_shapes(edge_shapes, axes)
@@ -79,55 +75,78 @@ def draw(graph: AGraph, axes: Axes):
         _draw_shapes(edge_shapes, axes)
 
 
-def _draw_shapes(shapes: Iterable[xdot_rs.ShapeDraw], axes: Axes):
+def _verbose_parse(code: str) -> Iterable[xdot_rs.ShapeDraw]:
+    if not code:
+        return []
+    try:
+        return xdot_rs.parse(code)
+    except ValueError as e:
+        raise ValueError(f'Error parsing {code!r}: {e}') from None
+
+
+def _parse_from_attrs(
+    item: Edge | Node | AGraph | Iterable[Edge | Node],
+) -> Iterable[xdot_rs.ShapeDraw]:
+    if not isinstance(item, (Edge, Node, AGraph)):
+        return (sd for i in item for sd in _parse_from_attrs(i))
+    attrs = item.graph_attr if isinstance(item, AGraph) else item.attr
+    return chain.from_iterable(
+        _verbose_parse(attrs.get(attr) or '') for attr in ['_draw_', '_ldraw_']
+    )
+
+
+def _draw_shapes(shapes: Iterable[xdot_rs.ShapeDraw], axes: Axes) -> None:
     for sd in shapes:
-        color = (
-            sd.pen.color.r / 255,
-            sd.pen.color.g / 255,
-            sd.pen.color.b / 255,
-            sd.pen.color.a / 255,
+        _draw_shape(sd, axes)
+
+
+def _draw_shape(sd: xdot_rs.ShapeDraw, axes: Axes) -> None:
+    color = rgba2tuple(sd.pen.color)
+    if isinstance(sd.shape, xs.ExternalImage):
+        raise NotImplementedError('ExternalImage support not yet implemented')
+    if isinstance(sd.shape, xs.Text):
+        font_props = FontProperties(
+            family=sd.pen.font_name,
+            style='italic' if sd.pen.font_characteristics.italic else 'normal',
+            weight='bold' if sd.pen.font_characteristics.bold else 'normal',
+            size=sd.pen.font_size * 2,  # TODO: get this under control
         )
-        if isinstance(sd.shape, xs.Ellipse):
-            axes.add_patch(
-                Ellipse(
-                    (sd.shape.x, sd.shape.y),
-                    sd.shape.w,
-                    sd.shape.h,
-                    edgecolor=color,
-                    facecolor=sd.pen.fill_color if sd.shape.filled else '#0000',
-                    linewidth=sd.pen.line_width,
-                )
-            )
-        elif isinstance(sd.shape, xs.Points):
-            x, y = zip(*sd.shape.points)
-            if sd.shape.type == xs.PointsType.Polygon:
-                axes.add_line(Line2D(x, y))
-            elif sd.shape.type == xs.PointsType.BSpline:
-                codes = [Path.MOVETO] + ([Path.CURVE4] * (len(sd.shape.points) - 1))
-                axes.add_patch(
-                    PathPatch(
-                        Path(sd.shape.points, codes),
-                        edgecolor=color,
-                        linewidth=sd.pen.line_width,
-                    )
-                )
-            else:
-                assert False, f'Unhandled PointsType {sd.shape.type}'
-        elif isinstance(sd.shape, xs.Text):
-            font_props = FontProperties(
-                family=sd.pen.font_name,
-                style='italic' if sd.pen.font_characteristics.italic else 'normal',
-                weight='bold' if sd.pen.font_characteristics.bold else 'normal',
-                size=int(sd.pen.font_size),
-            )
-            axes._add_text(  # pylint: disable=protected-access
-                Text(
-                    sd.shape.x,
-                    sd.shape.y,
-                    sd.shape.text,
-                    color=color,
-                    fontproperties=font_props,
-                )
-            )
+        text = Text(
+            sd.shape.x,
+            sd.shape.y,
+            sd.shape.text,
+            color=color,
+            fontproperties=font_props,
+            horizontalalignment=str(sd.shape.align).split('.')[1].lower(),
+            verticalalignment='baseline',
+        )
+        axes._add_text(text)
+        # axes.add_patch(Ellipse((sd.shape.x, sd.shape.y), 1, 1))
+        return
+
+    patch_args = PatchArgs(
+        fill=sd.shape.filled,
+        edgecolor=color,
+        facecolor=rgba2tuple(sd.pen.fill_color),
+        linewidth=sd.pen.line_width,
+    )
+    if isinstance(sd.shape, xs.Ellipse):
+        axes.add_patch(
+            Ellipse((sd.shape.x, sd.shape.y), sd.shape.w * 2, sd.shape.h * 2, **patch_args)
+        )
+    elif isinstance(sd.shape, xs.Points):
+        x, y = zip(*sd.shape.points)
+        if sd.shape.type == xs.PointsType.Polygon:
+            axes.add_patch(Polygon(sd.shape.points, **patch_args))
+        elif sd.shape.type == xs.PointsType.BSpline:
+            codes = [Path.MOVETO] + ([Path.CURVE4] * (len(sd.shape.points) - 1))
+            # for xy in sd.shape.points: axes.add_patch(Ellipse(xy, 1, 1))
+            axes.add_patch(PathPatch(Path(sd.shape.points, codes), **patch_args))
         else:
-            assert False, f'Unhandled shape {sd.shape}'
+            assert False, f'Unhandled PointsType {sd.shape.type}'
+    else:
+        assert False, f'Unhandled shape {sd.shape}'
+
+
+def rgba2tuple(rgba: xdot_rs.draw.Rgba) -> tuple[float, float, float, float]:
+    return (rgba.r / 255, rgba.g / 255, rgba.b / 255, rgba.a / 255)

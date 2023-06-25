@@ -1,6 +1,7 @@
 /.venv/
 /.idea/
 /dist/
+/tests/results/
 /.pytest_cache/
 /.mypy_cache/
 /.ruff_cache/
