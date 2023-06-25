@@ -1,21 +1,21 @@
 [build-system]
-requires = ['flit_core >=3.2,<4', 'get_version']
-build-backend = 'flit_core.buildapi'
+build-backend = 'hatchling.build'
+requires = ['hatchling', 'hatch-vcs']
 
 [project]
 name = 'gvrender'
+description = 'Renders GraphViz graphs to Matplotlib surfaces.'
 authors = [{ name = 'Phil A.', email = 'flying-sheep@web.de' }]
 readme = 'README.rst'
+license = 'GPL-3.0-or-later'
 classifiers = [
-    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Programming Language :: Python :: 3',
 ]
-dynamic = ['version', 'description']
+dynamic = ['version']
 requires-python = '>=3.8'
 dependencies = [
-    'get_version',
     'PyGraphviz',
     'xdot-rs >=0.2.3',
     'matplotlib',
@@ -33,6 +33,11 @@ test = [
 # Documentation = 'https://gvrender.readthedocs.org/en/latest/'
 Source = 'https://github.com/flying-sheep/gvrender'
 
+[tool.hatch.version]
+source = 'vcs'
+[tool.hatch.build.hooks.vcs]
+version-file = 'src/gvrender/_version.py'
+
 [tool.black]
 line-length = 100
 skip-string-normalization = true
@@ -40,17 +45,17 @@ skip-string-normalization = true
 [tool.ruff]
 line-length = 100
 select = [
-    # Pyflakes
-    'F',
-    # Pycodestyle
-    'E',
-    'W',
-    # isort
-    'I001',
-    # pyupgrade
-    'UP',
+    'F',  # Pyflakes
+    'E',  # Pycodestyle errors
+    'W',  # Pycodestyle warnings
+    'I001',  # isort
+    'UP',  # pyupgrade
+    'Q', # flake8-quotes
 ]
 src = ['src', 'tests']
+[tool.ruff.flake8-quotes]
+inline-quotes = 'single'
+multiline-quotes = 'single'
 
 [tool.pytest.ini_options]
 addopts = '-Werror --import-mode=importlib --mpl'
