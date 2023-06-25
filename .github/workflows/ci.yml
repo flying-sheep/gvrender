@@ -29,6 +29,6 @@ jobs:
         pip install --debug '.[test]'
     - uses: jakebailey/pyright-action@v1
       with:
-        version: 1.1.244
+        version: 1.1.311
     - name: Tests
       run: pytest -v --color=yes
