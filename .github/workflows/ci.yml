@@ -33,7 +33,7 @@ jobs:
     - name: Tests
       id: tests
       run: pytest -v --color=yes --mpl-results-path=tests/results --mpl-generate-summary=html
-    - if: steps.tests.outcome == 'failure'
+    - if: failure() && steps.tests.outcome == 'failure'
       uses: actions/upload-artifact@v3
       with:
         name: mpl-results
