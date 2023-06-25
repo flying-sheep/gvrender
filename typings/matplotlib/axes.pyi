@@ -92,6 +92,27 @@ class Axes(_AxesBase):
     texts: list[Text]
     xaxis: XAxis
     yaxis: YAxis
+    @overload
+    def axis(
+        self,
+        option: (
+            tuple[float, float, float, float]
+            | bool
+            | Literal['on', 'off', 'equal', 'scaled', 'tight', 'auto', 'image', 'square']
+        ),
+        *,
+        emit: bool = True,
+    ) -> tuple[float, float, float, float]: ...
+    @overload
+    def axis(
+        self,
+        *,
+        xmin: float | None = None,
+        xmax: float | None = None,
+        ymin: float | None = None,
+        ymax: float | None = None,
+        emit: bool = True,
+    ) -> tuple[float, float, float, float]: ...
     def get_title(self, loc="center") -> str: ...
     def set_title(self, label, fontdict=None, loc=None, pad=None, *, y=None, **kwargs) -> Text: ...
     def get_legend_handles_labels(self, legend_handler_map=None) -> tuple[Any, Any]: ...

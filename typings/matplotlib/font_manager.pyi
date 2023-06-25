@@ -14,7 +14,7 @@ class FontProperties:
         variant: Literal['normal', 'small-caps'] | None = None,
         weight: _FontWeight | int | None = None,
         stretch: _FontStretch | int | None = None,
-        size: _FontSize | int | None = None,
+        size: _FontSize | int | float | None = None,
         fname: str | Path | None = None,  # if set, it's a hardcoded filename to use
         math_fontfamily: Literal['dejavusans', 'dejavuserif', 'cm', 'stix', 'stixsans', 'custom']
         | None = None,
