@@ -39,8 +39,8 @@ version-file = 'src/gvrender/_version.py'
 python = '3.12'
 features = ['test']
 [tool.hatch.envs.test.scripts]
-test = 'pytest -vv {args}'
-test-baseline = 'pytest --mpl-generate-path=tests/baseline'
+run = 'pytest -vv {args}'
+baseline = 'pytest --mpl-generate-path=tests/baseline'
 
 [tool.ruff]
 line-length = 100
@@ -60,8 +60,12 @@ required-imports = ["from __future__ import annotations"]
 quote-style = 'single'
 
 [tool.pytest.ini_options]
-addopts = '-Werror --import-mode=importlib --mpl'
+addopts = '--import-mode=importlib --mpl'
 xfail_strict = true
+filterwarnings = [
+  'error',
+  'ignore:datetime.datetime.utcfromtimestamp\(\) is deprecated',
+]
 
 [tool.pyright]
 include = ['src']
