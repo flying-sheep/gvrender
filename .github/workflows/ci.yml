@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.8'
+        python-version: '3.12'
         cache: pip
         cache-dependency-path: '**/pyproject.toml'
     - uses: ts-graphviz/setup-graphviz@v1
@@ -26,9 +26,6 @@ jobs:
       run: |
         pip install --upgrade pip wheel
         pip install --debug '.[test]'
-    - uses: jakebailey/pyright-action@v1
-      with:
-        version: 1.1.311
     - name: Tests
       id: tests
       run: pytest -v --color=yes --mpl-results-path=tests/results --mpl-generate-summary=html

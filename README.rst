@@ -9,6 +9,6 @@ Renders GraphViz_ graphs to Matplotlib_ surfaces.
 Development
 -----------
 
-Install just_, the run `just` for a list of commands.
+Install Hatch_, the run `hatch env show` for a list of commands.
 
-.. _just: https://github.com/casey/just/
+.. _hatch: https://hatch.pypa.io/latest/
