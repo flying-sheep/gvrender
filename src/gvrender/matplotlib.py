@@ -15,7 +15,7 @@ from itertools import chain
 from typing import TYPE_CHECKING
 
 import xdot_rs
-import xdot_rs.shapes as xs  # type: ignore
+import xdot_rs.shapes as xs
 from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import Ellipse, PathPatch, Polygon
@@ -31,7 +31,7 @@ else:
 from .types import GraphLike, Prog
 
 
-def render(graph_or_code: GraphLike, axes: Axes | None = None, *, prog: Prog | None = None):
+def render(graph_or_code: GraphLike, axes: Axes | None = None, *, prog: Prog | None = None) -> None:
     """Render a graph to matplotlib"""
     if axes is None:
         from matplotlib import pyplot
@@ -56,7 +56,7 @@ def to_xdot(graph_or_code: GraphLike, prog: Prog | None) -> AGraph:
     return graph
 
 
-def draw(graph: AGraph, axes: Axes):
+def draw(graph: AGraph, axes: Axes) -> None:
     """Draw an xdot graph into axes"""
     x_min, y_min, x_max, y_max = map(float, graph.graph_attr['bb'].split(','))
     axes.axis(False)

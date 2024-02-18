@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Generator, MutableMapping
+from collections.abc import Collection, Generator, Iterable, Iterator, Mapping, MutableMapping
 from pathlib import Path
-from typing import Literal
+from typing import Literal, overload
 
 class SWIGPointer: ...
 
@@ -45,6 +45,8 @@ _Format = Literal[
     'xlib',
 ]
 
+_Prog = Literal['neato', 'dot', 'twopi', 'circo', 'fdp', 'nop']
+
 class Node(str):
     attr: ItemAttribute
     name: str
@@ -61,30 +63,46 @@ class AGraph(Collection[Node]):
     edge_attr: Attribute
     def __init__(
         self,
-        thing: str | Path | dict | SWIGPointer = None,
-        filename: str | Path = None,
-        data: dict = None,
-        string: str = None,
-        handle: SWIGPointer = None,
+        thing: str | Path | Mapping[str, Iterable[str]] | SWIGPointer | None = None,
+        filename: str | Path | None = None,
+        data: Mapping[str, Iterable[str]] | None = None,
+        string: str | None = None,
+        handle: SWIGPointer | None = None,
         name: str = '',
         strict: bool = True,
         directed: bool = False,
-        **attr,
+        **attr: object,
     ) -> None: ...
+    @overload
     def draw(
         self,
-        path: str | None = None,
+        path: None = None,
         format: _Format | None = None,
-        prog: Literal['neato', 'dot', 'twopi', 'circo', 'fdp', 'nop'] | None = None,
+        prog: _Prog | None = None,
         args: str = '',
-    ): ...
+    ) -> bytes: ...
+    @overload
+    def draw(
+        self,
+        path: str,
+        format: _Format | None = None,
+        prog: _Prog | None = None,
+        args: str = '',
+    ) -> None: ...
     def nodes_iter(self) -> Generator[Node, None, None]: ...
     def edges_iter(self) -> Generator[Edge, None, None]: ...
     def neighbors_iter(self, n: Node | str) -> Generator[Node, None, None]: ...
     def __getitem__(self, n: Node | str) -> list[Node]: ...
+    def __contains__(self, n: Node | str) -> bool: ...  # type: ignore[override]
+    def __iter__(self) -> Generator[Node, None, None]: ...
+    def __len__(self) -> int: ...
 
-class Attribute(MutableMapping[str]):
-    pass
+class Attribute(MutableMapping[str, str]):
+    def __delitem__(self, __key: str) -> None: ...
+    def __getitem__(self, __key: str) -> str: ...
+    def __iter__(self) -> Iterator[str]: ...
+    def __len__(self) -> int: ...
+    def __setitem__(self, __key: str, __value: str) -> None: ...
 
 class ItemAttribute(Attribute):
     pass

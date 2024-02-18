@@ -19,3 +19,7 @@ repos:
   hooks:
   - id: oxipng
     args: ['--opt=3', '--interlace=0', '--strip=safe']
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 'v1.8.0'  # Use the sha / tag you want to point at
+  hooks:
+  - id: mypy

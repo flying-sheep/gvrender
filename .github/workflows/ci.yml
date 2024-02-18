@@ -26,9 +26,6 @@ jobs:
       run: |
         pip install --upgrade pip wheel
         pip install --debug '.[test]'
-    - uses: jakebailey/pyright-action@v1
-      with:
-        version: 1.1.311
     - name: Tests
       id: tests
       run: pytest -v --color=yes --mpl-results-path=tests/results --mpl-generate-summary=html

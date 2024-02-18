@@ -1,6 +1,0 @@
-from __future__ import annotations
-
-class TransformNode: ...
-
-class Transform(TransformNode):
-    def __init__(self, shorthand_name=None) -> None: ...

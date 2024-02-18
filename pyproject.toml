@@ -69,3 +69,8 @@ filterwarnings = [
 
 [tool.pyright]
 include = ['src']
+
+[tool.mypy]
+strict = true
+explicit_package_bases = true
+mypy_path = "src:typings"
