@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import sys
 from collections.abc import Collection, Mapping
 from typing import Any, Literal, TypedDict
 
-try:
+if sys.version_info >= (3, 12):
     from typing import Unpack
-except ImportError:  # Python < 3.12
+else:
     from typing_extensions import Unpack
 
 from matplotlib.artist import Artist

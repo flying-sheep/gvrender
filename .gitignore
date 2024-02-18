@@ -1,8 +1,5 @@
-/.venv/
-/.idea/
 /dist/
+_version.py
 /tests/results/
-/.pytest_cache/
-/.mypy_cache/
-/.ruff_cache/
+/.*_cache/
 __pycache__/
