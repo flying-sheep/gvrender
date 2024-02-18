@@ -9,25 +9,22 @@ authors = [{ name = 'Phil A.', email = 'flying-sheep@web.de' }]
 readme = 'README.rst'
 license = 'GPL-3.0-or-later'
 classifiers = [
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
-    'Programming Language :: Python :: 3',
+  'Development Status :: 4 - Beta',
+  'Intended Audience :: Developers',
+  'Programming Language :: Python :: 3',
 ]
 dynamic = ['version']
 requires-python = '>=3.8'
 dependencies = [
-    'PyGraphviz',
-    'xdot-rs >=0.2.3',
-    'matplotlib',
-    'numpy>=1.20',  # numpy.typing
-    'typing-extensions; python_version < "3.12"',
+  'PyGraphviz',
+  'xdot-rs >=0.2.3',
+  'matplotlib',
+  'numpy>=1.20',                                # numpy.typing
+  'typing-extensions; python_version < "3.12"',
 ]
 
 [project.optional-dependencies]
-test = [
-    'pytest',
-    'pytest-mpl',
-]
+test = ['pytest', 'pytest-mpl']
 
 [project.urls]
 # Documentation = 'https://gvrender.readthedocs.org/en/latest/'
@@ -40,14 +37,15 @@ version-file = 'src/gvrender/_version.py'
 
 [tool.ruff]
 line-length = 100
-select = [
-    'F',  # Pyflakes
-    'E',  # Pycodestyle errors
-    'W',  # Pycodestyle warnings
-    'I001',  # isort
-    'UP',  # pyupgrade
-]
 src = ['src', 'tests']
+[tool.ruff.lint]
+select = [
+  'F',    # Pyflakes
+  'E',    # Pycodestyle errors
+  'W',    # Pycodestyle warnings
+  'I001', # isort
+  'UP',   # pyupgrade
+]
 [tool.ruff.format]
 quote-style = 'single'
 
