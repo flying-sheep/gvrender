@@ -9,6 +9,6 @@ Renders GraphViz_ graphs to Matplotlib_ surfaces.
 Development
 -----------
 
-Install Hatch_, the run `hatch env show` for a list of commands.
+Install Hatch_, the run ``hatch env show`` for a list of commands.
 
 .. _hatch: https://hatch.pypa.io/latest/
