@@ -10,7 +10,7 @@ from gvrender.matplotlib import render
 MIN_DOT = 'graph { a -- b }'
 
 
-@pytest.mark.mpl_image_compare  # type: ignore[misc]
+@pytest.mark.mpl_image_compare  # type: ignore[untyped-decorator]
 def test_render() -> pyplot.Figure:
     """A simple render call should work"""
     fig, axes = pyplot.subplots()
