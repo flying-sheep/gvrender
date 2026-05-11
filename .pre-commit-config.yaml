@@ -20,6 +20,6 @@ repos:
   - id: oxipng
     args: ['--opt=3', '--interlace=0', '--strip=safe']
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.20.2
+  rev: v2.0.0
   hooks:
   - id: mypy
