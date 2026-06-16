@@ -1,76 +1,71 @@
 [build-system]
-build-backend = 'hatchling.build'
-requires = ['hatchling', 'hatch-vcs']
+build-backend = "hatchling.build"
+requires = [ "hatch-vcs", "hatchling" ]
 
 [project]
-name = 'gvrender'
-description = 'Renders GraphViz graphs to Matplotlib surfaces.'
-authors = [{ name = 'Phil A.', email = 'flying-sheep@web.de' }]
-readme = 'README.rst'
-license = 'GPL-3.0-or-later'
+name = "gvrender"
+description = "Renders GraphViz graphs to Matplotlib surfaces."
+readme = "README.rst"
+license = "GPL-3.0-or-later"
+authors = [ { name = "Phil A.", email = "flying-sheep@web.de" } ]
+requires-python = ">=3.9"
 classifiers = [
-  'Development Status :: 4 - Beta',
-  'Intended Audience :: Developers',
-  'Programming Language :: Python :: 3',
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
-dynamic = ['version']
-requires-python = '>=3.9'
+dynamic = [ "version" ]
 dependencies = [
-  'PyGraphviz',
-  'xdot-rs >=0.2.3',
-  'matplotlib',
-  'numpy>=1.20',                                # numpy.typing
-  'typing-extensions; python_version < "3.12"',
+  "matplotlib",
+  "numpy>=1.20",                              # numpy.typing
+  "pygraphviz",
+  "typing-extensions; python_version<'3.12'",
+  "xdot-rs>=0.2.3",
 ]
-
-[project.optional-dependencies]
-test = ['pytest', 'pytest-mpl']
-
-[project.urls]
 # Documentation = 'https://gvrender.readthedocs.org/en/latest/'
-Source = 'https://github.com/flying-sheep/gvrender'
+urls.Source = "https://github.com/flying-sheep/gvrender"
 
-[tool.hatch.version]
-source = 'vcs'
-[tool.hatch.build.hooks.vcs]
-version-file = 'src/gvrender/_version.py'
+[dependency-groups]
+test = [ "pytest", "pytest-mpl" ]
 
-[tool.hatch.envs.test]
-python = '3.12'
-features = ['test']
-[tool.hatch.envs.test.scripts]
-run = 'pytest -vv {args}'
-baseline = 'pytest --mpl-generate-path=tests/baseline'
+[tool.hatch]
+version.source = "vcs"
+build.hooks.vcs.version-file = "src/gvrender/_version.py"
+envs.hatch-test.dependency-groups = [ "test" ]
+envs.hatch-test.extra-scripts.baseline = "pytest --mpl-generate-path=tests/baseline"
 
 [tool.ruff]
 line-length = 100
-src = ['src', 'tests']
-[tool.ruff.lint]
-select = [
-  'F',    # Pyflakes
-  'E',    # Pycodestyle errors
-  'W',    # Pycodestyle warnings
-  'I001', # isort
-  'UP',   # pyupgrade
+src = [ "src", "tests" ]
+format.quote-style = "single"
+lint.select = [
+  "E",    # Pycodestyle errors
+  "F",    # Pyflakes
+  "I001", # isort
+  "UP",   # pyupgrade
+  "W",    # Pycodestyle warnings
 ]
-[tool.ruff.lint.isort]
-known-first-party = ["gvrender"]
-required-imports = ["from __future__ import annotations"]
-[tool.ruff.format]
-quote-style = 'single'
-
-[tool.pytest.ini_options]
-addopts = '--import-mode=importlib --mpl'
-xfail_strict = true
-filterwarnings = [
-  'error',
-  'ignore:datetime.datetime.utcfromtimestamp\(\) is deprecated',
-]
-
-[tool.pyright]
-include = ['src']
+lint.isort.known-first-party = [ "gvrender" ]
+lint.isort.required-imports = [ "from __future__ import annotations" ]
 
 [tool.mypy]
-strict = true
-explicit_package_bases = true
 mypy_path = "src:typings"
+explicit_package_bases = true
+strict = true
+
+[tool.pyright]
+include = [ "src" ]
+
+[tool.pytest]
+addopts = [ "--import-mode=importlib", "--mpl" ]
+filterwarnings = [
+  "error",
+  'ignore:datetime.datetime.utcfromtimestamp\(\) is deprecated',
+]
+strict = true
