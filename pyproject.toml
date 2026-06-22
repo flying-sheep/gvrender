@@ -28,8 +28,8 @@ dependencies = [
   "typing-extensions; python_version<'3.12'",
   "xdot-rs>=0.2.3",
 ]
-# Documentation = 'https://gvrender.readthedocs.org/en/latest/'
 urls.Source = "https://github.com/flying-sheep/gvrender"
+# Documentation = "https://gvrender.readthedocs.org/en/latest/"
 
 [dependency-groups]
 test = [ "pytest", "pytest-mpl" ]
