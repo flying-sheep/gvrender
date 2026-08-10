@@ -5,17 +5,17 @@ repos:
   - id: end-of-file-fixer
   - id: trailing-whitespace
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.16.1
+  rev: v0.16.2
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix]
   - id: ruff-format
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: v2.26.0
+  rev: v2.27.0
   hooks:
   - id: pyproject-fmt
 - repo: https://github.com/oxipng/oxipng
-  rev: v10.1.1
+  rev: v10.2.0
   hooks:
   - id: oxipng
     args: ['--opt=3', '--interlace=0', '--strip=safe']
